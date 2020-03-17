@@ -30,6 +30,29 @@ if [ ! -f $CACHE_FILE ]; then
   fi
   tar xvf $BUILD_DIR/$IMAGE_MAGICK_FILE | indent
 
+  echo "-----> Downloading dependencies"
+  # This section shamelessly stolen from https://github.com/weibeld/heroku-buildpack-graphviz/commit/8054a8ef7ce41952a54e6d55a6652509ba08dc8d?diff=unified
+ 
+  install() {
+    curl -s "$1" >pkg.deb
+    dpkg -x pkg.deb "$2"
+    rm pkg.deb
+  }
+ 
+  packages=libgvc6_2.38.0-12ubuntu2_amd64.deb
+  
+  install_dir=heroku-buildpack-imagemagick
+  mkdir -p "$1/$install_dir"
+ 
+  base_url="http://archive.ubuntu.com/ubuntu/pool/main/g/graphviz"
+  echo "Installing the following packages:"
+  for p in "${packages[@]}"; do
+   echo "    * $p"
+   install "$base_url/$p" "$1/$install_dir"
+  done
+  
+  echo "Dependencies installed at: $1/$install_dir"
+
   echo "-----> Building ImageMagick"
   cd $IMAGE_MAGICK_DIR
   export CPPFLAGS="-I$INSTALL_DIR/include -fPIC"
