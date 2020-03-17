@@ -32,7 +32,7 @@ if [ ! -f $CACHE_FILE ]; then
 
   echo "-----> Building ImageMagick"
   cd $IMAGE_MAGICK_DIR
-  export CPPFLAGS="-I$INSTALL_DIR/include"
+  export CPPFLAGS="-I$INSTALL_DIR/include -fPIC"
   export LDFLAGS="-L$INSTALL_DIR/lib"
   ./configure --prefix=$INSTALL_DIR
   make && make install
